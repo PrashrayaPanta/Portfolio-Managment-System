@@ -48,9 +48,10 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
 
         next()
         
-    } catch (error) {
+    } catch (error:any) {
         //! Token Expired Error
-        console.log(error)
+        console.log(error.message)
+        res.status(401).json({mesage:"Not Login", data:null, error:"Token Expired"})
 
         //! Token intercepted Error
     }
