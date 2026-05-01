@@ -1,25 +1,49 @@
+
 import multer from 'multer'
 
-import { Request, Response } from 'express'
+
 
 //! Configure storage
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (req, file, cb) => {        
         cb(null, 'uploads/')
     },
     filename: (req, file, cb) => {
+
+
+        let prefix = "";
+
+        console.log(file.fieldname);
+
+        if (file.fieldname === "hero-pic") {
+            prefix = "hero";
+        } else if (file.fieldname === "category-pic") {
+            prefix = "category";
+        } else {
+            prefix = "project";
+        }
+
+        console.log(prefix);
+        
+        
+
+        // console.log("The request body sent the value is", req.body);
+        
         console.log('I am inside the filename method')
 
         // file.mimetype
 
-        //! Generate 5 randon Character
+        //! Generate 5  character Randmon string
         const randomName = Math.random().toString(36).substring(2, 7)
+
+        console.log("the random name is ", randomName);
+        
 
         //! Get the original Name
         const originalName = file.originalname
         console.log(originalName)
 
-        cb(null, randomName + '-' + originalName)
+        cb(null, prefix + "-" + randomName + '-' + originalName)
 
         // Create custom filename: timestamp-originalname
         // const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
