@@ -18,6 +18,7 @@ const userRouter_1 = require("./Routes/userRouter");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const node_path_1 = __importDefault(require("node:path"));
 const cors_1 = __importDefault(require("cors"));
+const categoryRouter_1 = require("./Routes/categoryRouter");
 const pool = mysql2_1.default.createPool({
     host: process.env.DB_host,
     port: Number(process.env.DB_port),
@@ -50,8 +51,12 @@ app.use((0, cookie_parser_1.default)());
 app.use('/user', userRouter_1.userRouter);
 //! About Route
 app.use('/about', aboutRouter_1.aboutRouter);
+//! Catgeory Route
+app.use("/category", categoryRouter_1.categoryRouter);
 //! Hero Route
 app.use('/hero', heroRouter_1.heroRouter);
+//! Project Route
+app.use("/project", projectRouter_1.projectRouter);
 //! Skills
 app.use('/skills', skillsRouter_1.skillRouter);
 //! Contact

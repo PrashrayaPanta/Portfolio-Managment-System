@@ -6,6 +6,7 @@ import { contactRouter } from './Routes/contactRouter'
 import { educationRouter } from './Routes/educationRouter'
 import { projectRouter } from './Routes/projectRouter'
 
+
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -17,6 +18,7 @@ import path from 'node:path'
 import cors from "cors"
 import { sendOtpService } from './utils/sendOtpService'
 import { verifyOtpSerice } from './utils/verifyOtpService'
+import { categoryRouter } from './Routes/categoryRouter'
 
 
 
@@ -49,6 +51,8 @@ export { pool }
 
 const app = express()
 
+
+
 // Adds headers: Access-Control-Allow-Origin: *
 app.use(cors())
 
@@ -71,9 +75,16 @@ app.use('/about', aboutRouter)
 
 
 
+//! Catgeory Route
+app.use("/category", categoryRouter)
+
 
 //! Hero Route
 app.use('/hero', heroRouter)
+
+
+//! Project Route
+app.use("/project", projectRouter)
 
 //! Skills
 app.use('/skills', skillRouter)
