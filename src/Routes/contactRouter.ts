@@ -6,6 +6,7 @@ import {
     updateContactController,
     getAllContactController,
 } from '../Controllers/contactController'
+import { isAuth } from '../middleware/isAuth'
 
 export const contactRouter = express.Router()
 // Contact Routes
@@ -17,10 +18,10 @@ contactRouter.get('/:id', getContactController)
 contactRouter.get('/', getAllContactController)
 
 //! Create the Contact
-contactRouter.post('/', createContactController)
+contactRouter.post('/', isAuth, createContactController)
 
 //! Delete the contact By Id
-contactRouter.delete('/:id', deleteContactController)
+contactRouter.delete('/:id',isAuth, deleteContactController)
 
 //! Edit Contact By Id
-contactRouter.put('/:id', updateContactController)
+contactRouter.put('/:id', isAuth, updateContactController)

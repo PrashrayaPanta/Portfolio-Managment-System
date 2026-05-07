@@ -43,19 +43,25 @@ const createContactController = async (req, res) => {
         const { success, data, error } = ContactValidation_1.Contact.safeParse(req.body);
         if (!success) {
             return res.status(400).json({
-                errors: z.flattenError(error).fieldErrors
+                message: 'Validation failed',
+                data: null,
+                error: z.flattenError(error).fieldErrors
             });
         }
         await index_1.pool
             .promise()
             .query(`INSERT INTO contact (title, contactDescription) VALUES (?, ?)`, [data.title, data.contactDescription]);
         return res.status(201).json({
-            message: 'Contact created successfully'
+            message: 'Contact created successfully',
+            data: null,
+            error: null
         });
     }
     catch (error) {
         console.error('Create contact error:', error);
         return res.status(500).json({
+            message: 'Internal server error',
+            data: null,
             error: 'Internal server error'
         });
     }
@@ -66,20 +72,36 @@ const getContactController = async (req, res) => {
     try {
         const { id } = req.params;
         if (!id || isNaN(Number(id))) {
-            return res.status(400).json({ error: 'Invalid contact ID' });
+            return res.status(400).json({
+                message: 'Invalid contact ID',
+                data: null,
+                error: 'Invalid contact ID'
+            });
         }
         const [rows] = await index_1.pool
             .promise()
             .query(`SELECT * FROM contact WHERE id = ?`, [id]);
         const contacts = rows;
         if (contacts.length === 0) {
-            return res.status(404).json({ error: 'Contact not found' });
+            return res.status(404).json({
+                message: 'Contact not found',
+                data: null,
+                error: 'Contact not found'
+            });
         }
-        return res.status(200).json(contacts[0]);
+        return res.status(200).json({
+            message: 'Contact fetched successfully',
+            data: contacts[0],
+            error: null
+        });
     }
     catch (error) {
         console.error('Get contact error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({
+            message: 'Internal server error',
+            data: null,
+            error: 'Internal server error'
+        });
     }
 };
 exports.getContactController = getContactController;
@@ -89,11 +111,19 @@ const getAllContactController = async (req, res) => {
         const [rows] = await index_1.pool
             .promise()
             .query(`SELECT * FROM contact ORDER BY id DESC`);
-        return res.status(200).json(rows);
+        return res.status(200).json({
+            message: 'Contacts fetched successfully',
+            data: rows,
+            error: null
+        });
     }
     catch (error) {
         console.error('Get all contacts error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({
+            message: 'Internal server error',
+            data: null,
+            error: 'Internal server error'
+        });
     }
 };
 exports.getAllContactController = getAllContactController;
@@ -103,7 +133,11 @@ const updateContactController = async (req, res) => {
         console.log("I am update contact controller");
         const { id } = req.params;
         if (!id) {
-            return res.status(400).json({ error: 'Invalid contact ID' });
+            return res.status(400).json({
+                message: 'Invalid contact ID',
+                data: null,
+                error: 'Invalid contact ID'
+            });
         }
         console.log("I am after the id");
         const { success, data, error } = ContactValidation_1.EditContactSchmea.safeParse(req.body);
@@ -111,13 +145,14 @@ const updateContactController = async (req, res) => {
         console.log("The errror is ", error);
         if (!success) {
             return res.status(400).json({
-                errors: z.flattenError(error).fieldErrors
+                message: 'Validation failed',
+                data: null,
+                error: z.flattenError(error).fieldErrors
             });
         }
         console.log("I am not error but i am success you know what");
         const updates = [];
         const values = [];
-        // Define which fields to check and their column names
         const fields = [
             { key: 'title', column: 'Title' },
             { key: 'contactDescription', column: 'contactDescriptiion' },
@@ -125,31 +160,42 @@ const updateContactController = async (req, res) => {
         for (const field of fields) {
             console.log("The field is ", field);
             const value = data === null || data === void 0 ? void 0 : data[field.key];
-            // Update only if value is provided and not an empty string / null / undefined
             if (value !== undefined && value !== null && value !== '') {
                 updates.push(`${field.column} = ?`);
                 values.push(value);
             }
         }
         console.log("The updates is ", updates);
-        // If no fields to update, return early
         if (updates.length === 0) {
-            return res.status(400).json({ error: 'No valid fields to update' });
+            return res.status(400).json({
+                message: 'No valid fields to update',
+                data: null,
+                error: 'No valid fields to update'
+            });
         }
-        // Add id for the WHERE clause
         values.push(id);
         const query = `UPDATE contact SET ${updates.join(', ')} WHERE id = ?`;
         const [result] = await index_1.pool.promise().query(query, values);
         if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Education record not found' });
+            return res.status(404).json({
+                message: 'Education record not found',
+                data: null,
+                error: 'Education record not found'
+            });
         }
         return res.status(200).json({
-            message: 'Contact updated successfully'
+            message: 'Contact updated successfully',
+            data: null,
+            error: null
         });
     }
     catch (error) {
         console.error('Update contact error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({
+            message: 'Internal server error',
+            data: null,
+            error: 'Internal server error'
+        });
     }
 };
 exports.updateContactController = updateContactController;
@@ -158,22 +204,36 @@ const deleteContactController = async (req, res) => {
     try {
         const { id } = req.params;
         if (!id || isNaN(Number(id))) {
-            return res.status(400).json({ error: 'Invalid contact ID' });
+            return res.status(400).json({
+                message: 'Invalid contact ID',
+                data: null,
+                error: 'Invalid contact ID'
+            });
         }
         const [result] = await index_1.pool
             .promise()
             .query(`DELETE FROM contact WHERE id = ?`, [id]);
         const deleteResult = result;
         if (deleteResult.affectedRows === 0) {
-            return res.status(404).json({ error: 'Contact not found' });
+            return res.status(404).json({
+                message: 'Contact not found',
+                data: null,
+                error: 'Contact not found'
+            });
         }
         return res.status(200).json({
-            message: 'Contact deleted successfully'
+            message: 'Contact deleted successfully',
+            data: null,
+            error: null
         });
     }
     catch (error) {
         console.error('Delete contact error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({
+            message: 'Internal server error',
+            data: null,
+            error: 'Internal server error'
+        });
     }
 };
 exports.deleteContactController = deleteContactController;
