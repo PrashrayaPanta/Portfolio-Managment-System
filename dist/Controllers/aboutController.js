@@ -74,7 +74,15 @@ const createAboutController = async (req, res) => {
     }
 };
 exports.createAboutController = createAboutController;
-const getAboutController = () => { };
+const getAboutController = async (req, res) => {
+    try {
+        const [rows] = await __1.pool.promise().query(`select * from About`);
+        res.status(200).json({ message: "About gets", data: rows[0], error: null });
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
 exports.getAboutController = getAboutController;
 const deleteAboutController = () => { };
 exports.deleteAboutController = deleteAboutController;

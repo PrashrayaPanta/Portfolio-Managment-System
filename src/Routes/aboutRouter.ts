@@ -1,5 +1,6 @@
 import express from 'express'
 import { createAboutController, deleteAboutController, getAboutController, updateAboutController } from '../Controllers/aboutController';
+import { isAuth } from '../middleware/isAuth';
 
 export const aboutRouter = express.Router();
 
@@ -9,9 +10,9 @@ export const aboutRouter = express.Router();
 aboutRouter.get("/", getAboutController)
 
 
-aboutRouter.post("/", createAboutController)
+aboutRouter.post("/", isAuth, createAboutController)
 
-aboutRouter.delete("/:id", deleteAboutController)
+aboutRouter.delete("/:id", isAuth, deleteAboutController)
 
-aboutRouter.put("/:id", updateAboutController)
+aboutRouter.put("/:id", isAuth, updateAboutController)
 

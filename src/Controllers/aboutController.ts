@@ -3,6 +3,8 @@ import { About } from '../Validation/AboutValidation'
 import * as z from 'zod'
 import { pool } from '..'
 
+
+
 export const createAboutController = async (req: Request, res: Response) => {
     try {
         // console.log(req.headers);
@@ -58,7 +60,27 @@ export const createAboutController = async (req: Request, res: Response) => {
     }
 }
 
-export const getAboutController = () => {}
+export const getAboutController = async(req:Request, res:Response) => {
+
+    try {
+        const [rows]: any = await pool.promise().query(`select * from About`)
+
+        res.status(200).json({message:"About gets", data:rows[0], error:null})
+ 
+    } catch (error) {
+        
+
+        console.log(error);
+        
+    }
+  
+
+
+
+
+
+
+}
 
 export const deleteAboutController = () => {}
 
