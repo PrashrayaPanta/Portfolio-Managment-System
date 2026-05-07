@@ -1,8 +1,11 @@
 import express from 'express'
-import { Login, Register } from '../Controllers/userController'
+import { Login, Logout, Register } from '../Controllers/userController'
 
 export const userRouter = express.Router()
 
 userRouter.post('/login', Login)
 
 userRouter.post('/register', Register)
+
+
+userRouter.get("/logout", Logout)

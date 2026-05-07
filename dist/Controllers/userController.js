@@ -30,12 +30,12 @@ const Login = async (req, res) => {
         const user = rows[0];
         //! 3. check if user exist
         if (!user) {
-            return res.status(401).json({ error: 'Invalid email or password' });
+            return res.status(401).json({ message: "Error", data: null, error: 'Invalid email or password' });
         }
         //! 4. Compare provided password with stored hash
         const isPasswordMatched = await bcrypt_1.default.compare(password, user.password);
         if (!isPasswordMatched) {
-            return res.status(401).json({ error: 'Invalid email or password' });
+            return res.status(401).json({ message: "Error", data: null, error: 'Invalid email or password' });
         }
         console.log(user);
         //! 5. Generate JWT token (optional but recommended)
@@ -47,9 +47,10 @@ const Login = async (req, res) => {
             secure: false,
             sameSite: 'lax',
         });
-        return res.status(201).json({ message: 'cookie is created' });
+        return res.status(201).json({ message: 'Success', data: user, error: null });
     }
     catch (error) {
+        res.status(500).json({ message: "Error", data: null, error: "Internal Server Error" });
     }
 };
 exports.Login = Login;
