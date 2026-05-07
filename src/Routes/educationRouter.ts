@@ -6,7 +6,12 @@ import {
     getAllEducationController,
     getEducationControllerById,
     updateEducationController,
+
 } from '../Controllers/educationController'
+import { isAuth } from '../middleware/isAuth'
+
+
+
 
 export const educationRouter = express.Router()
 
@@ -19,10 +24,10 @@ educationRouter.get('/:id', getEducationControllerById)
 educationRouter.get('/', getAllEducationController)
 
 //! Post Education
-educationRouter.post('/', createEducationController)
+educationRouter.post('/', isAuth, createEducationController)
 
 //! Delete Education By Id
-educationRouter.delete('/:id', deleteEducationController)
+educationRouter.delete('/:id', isAuth, deleteEducationController)
 
 //! Edit Education By Id
-educationRouter.put('/:id', updateEducationController)
+educationRouter.put('/:id', isAuth, updateEducationController)
