@@ -6,6 +6,7 @@ import { createCategory }  from "../Controllers/categoryController"
 import { getAllProjectsWithCertainCategory } from '../Controllers/projectController';
 import { upload } from '../middleware/upload';
 import { deleteImageController } from '../Controllers/ImageController';
+import { isAuth } from '../middleware/isAuth';
 export const categoryRouter = express.Router();
 
 
@@ -23,11 +24,11 @@ categoryRouter.get("/:id", getCertainCategory)
 
 
 //! Edit Certain Category
-categoryRouter.put("/:id", editCertainCategory)
+categoryRouter.put("/:id", isAuth, editCertainCategory)
 
 
 //! Get Certain Category
-categoryRouter.get("/:id/projects", getAllProjectsWithCertainCategory)
+categoryRouter.get("/:id/projects",  getAllProjectsWithCertainCategory)
 
 //! Delete Image for Category
-categoryRouter.delete("/uploads/:filename", deleteImageController)
+categoryRouter.delete("/uploads/:filename",isAuth, deleteImageController)
