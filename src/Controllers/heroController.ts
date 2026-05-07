@@ -1,6 +1,7 @@
 // ========== HERO CONTROLLERS ==========
 import { Request , Response} from "express";
-import { Hero } from "../Validation/HeroValidatiion";
+import { createHeroSchema, updateHeroSchema } from "../Validation/HeroValidatiion";
+
 import * as z from "zod";
 import { pool } from "../index"
 import path from "node:path";
@@ -39,54 +40,16 @@ export const createHeroController = async(req:Request, res:Response) => {
     
 
 
-             console.log(req.url);
+               console.log(req.url);
              
-              console.log(req.file);
+                console.log(req.file);
               
+       
         
-                // console.log(req.headers);
-                
-                // console.log(req.body);
-                
+      
+            
         
-                // console.log("I am inside the create about controller");
-        
-        
-                // console.log("inside the");
-        
-                // console.log(req.body);
-                
-                
-                
-                // const { description } = req.body;
-        
-        
-                // const { success, data, error } = About.safeParse(req.body);
-                
-        
-                // console.log(error);
-                
-                // console.log(success);
-                
-        
-        
-        
-                // console.log("The data is", data);
-                
-        
-        
-                // console.log("I am after the error k xa tero thik xa ni");
-        
-        
-                // const result = About.parse(req.body)
-        
-                // console.log(result);
-                
-        
-                // console.log("TRhge srult is n", result);
-        
-        
-                const { success, data, error } = Hero.safeParse(req.body)
+                const { success, data, error } = createHeroSchema.safeParse(req.body)
                 
                 console.log("This is error", error);
                 
@@ -101,11 +64,10 @@ export const createHeroController = async(req:Request, res:Response) => {
               // ✅ Store relative path (e.g., "uploads/filename.jpg")
               const relativeImagePath = `uploads/${req?.file?.filename}`;
         
-                
-        
+              
               await pool.promise().query(
-              `INSERT INTO Hero (heroDescription, img_path) VALUES(?, ?)`,
-              [data.heroDescription, req.file?.path]
+              `INSERT INTO Hero (title,heroDescription, img_path) VALUES(?, ?, ?)`,
+              [data.title, data.heroDescription, req.file?.path]
               );
     
     
@@ -118,7 +80,7 @@ export const createHeroController = async(req:Request, res:Response) => {
               console.log("Succesful;ly inserted to about table of pms");
                 
         
-        
+              res.status(200).json({message:"Success", data:null, error:null})
                 
         
             } catch (error) {
@@ -127,10 +89,6 @@ export const createHeroController = async(req:Request, res:Response) => {
             
             }
         
-
-
-
-
 }
 
 export const getHeroControllerById = async(req:Request, res:Response) => {
@@ -200,22 +158,53 @@ export const deleteHeroController = () => {
 
 }
 
-export const updateHeroController = () => {
 
+
+export const updateHeroController = async (req: Request, res: Response) => {
   try {
-    
-      
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: 'Hero ID is required' });
+    }
 
+    // Validate request body (heroDescription only)
+    const { success, data, error } = updateHeroSchema.safeParse(req.body);
+    if (!success) {
+      return res.status(400).json({ errors: error.flatten().fieldErrors });
+    }
 
+    const updates: string[] = [];
+    const values: any[] = [];
+
+    // Handle heroDescription if provided
+    if (data.heroDescription !== undefined && data.heroDescription !== null && data.heroDescription !== '') {
+      updates.push('heroDescription = ?');
+      values.push(data.heroDescription);
+    }
+
+    // Handle hero-pic file upload (field name sent as 'hero-pic')
+    if (req.file && req.file.path) {
+      updates.push('img_path = ?');
+      values.push(req.file.path);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    // Add id for WHERE clause
+    values.push(id);
+
+    const query = `UPDATE Hero SET ${updates.join(', ')} WHERE id = ?`;
+    const [result]: any = await pool.promise().query(query, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Hero record not found' });
+    }
+
+    return res.status(200).json({ message: 'Hero record updated successfully' });
   } catch (error) {
-
-
-
-
-
+    console.error('Update hero error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
-
-
-
-
-}
+};

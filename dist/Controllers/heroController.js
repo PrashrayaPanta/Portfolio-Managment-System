@@ -48,21 +48,7 @@ const createHeroController = async (req, res) => {
         //                 console.log(`${req.protocol}://${req.host}${FolderPath}/${req.file?.filename}`);
         console.log(req.url);
         console.log(req.file);
-        // console.log(req.headers);
-        // console.log(req.body);
-        // console.log("I am inside the create about controller");
-        // console.log("inside the");
-        // console.log(req.body);
-        // const { description } = req.body;
-        // const { success, data, error } = About.safeParse(req.body);
-        // console.log(error);
-        // console.log(success);
-        // console.log("The data is", data);
-        // console.log("I am after the error k xa tero thik xa ni");
-        // const result = About.parse(req.body)
-        // console.log(result);
-        // console.log("TRhge srult is n", result);
-        const { success, data, error } = HeroValidatiion_1.Hero.safeParse(req.body);
+        const { success, data, error } = HeroValidatiion_1.createHeroSchema.safeParse(req.body);
         console.log("This is error", error);
         // console.log(result);
         if (!success) {
@@ -71,11 +57,12 @@ const createHeroController = async (req, res) => {
         }
         // ✅ Store relative path (e.g., "uploads/filename.jpg")
         const relativeImagePath = `uploads/${(_a = req === null || req === void 0 ? void 0 : req.file) === null || _a === void 0 ? void 0 : _a.filename}`;
-        await index_1.pool.promise().query(`INSERT INTO Hero (heroDescription, img_path) VALUES(?, ?)`, [data.heroDescription, (_b = req.file) === null || _b === void 0 ? void 0 : _b.path]);
+        await index_1.pool.promise().query(`INSERT INTO Hero (title,heroDescription, img_path) VALUES(?, ?, ?)`, [data.title, data.heroDescription, (_b = req.file) === null || _b === void 0 ? void 0 : _b.path]);
         // ✅ Build full URL to access the image
         // const imageUrl = `${req.protocol}://${req.get('host')}/${relativeImagePath}`;
         // console.log("The image url is ", imageUrl);
         console.log("Succesful;ly inserted to about table of pms");
+        res.status(200).json({ message: "Success", data: null, error: null });
     }
     catch (error) {
         console.log("kye error ho", error);
@@ -108,10 +95,44 @@ exports.getHeroControllerById = getHeroControllerById;
 const deleteHeroController = () => {
 };
 exports.deleteHeroController = deleteHeroController;
-const updateHeroController = () => {
+const updateHeroController = async (req, res) => {
     try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ error: 'Hero ID is required' });
+        }
+        // Validate request body (heroDescription only)
+        const { success, data, error } = HeroValidatiion_1.updateHeroSchema.safeParse(req.body);
+        if (!success) {
+            return res.status(400).json({ errors: error.flatten().fieldErrors });
+        }
+        const updates = [];
+        const values = [];
+        // Handle heroDescription if provided
+        if (data.heroDescription !== undefined && data.heroDescription !== null && data.heroDescription !== '') {
+            updates.push('heroDescription = ?');
+            values.push(data.heroDescription);
+        }
+        // Handle hero-pic file upload (field name sent as 'hero-pic')
+        if (req.file && req.file.path) {
+            updates.push('img_path = ?');
+            values.push(req.file.path);
+        }
+        if (updates.length === 0) {
+            return res.status(400).json({ error: 'No valid fields to update' });
+        }
+        // Add id for WHERE clause
+        values.push(id);
+        const query = `UPDATE Hero SET ${updates.join(', ')} WHERE id = ?`;
+        const [result] = await index_1.pool.promise().query(query, values);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Hero record not found' });
+        }
+        return res.status(200).json({ message: 'Hero record updated successfully' });
     }
     catch (error) {
+        console.error('Update hero error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 exports.updateHeroController = updateHeroController;

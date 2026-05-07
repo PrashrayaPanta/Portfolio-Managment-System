@@ -12,8 +12,13 @@ const ImageController_1 = require("../Controllers/ImageController");
 exports.heroRouter = express_1.default.Router();
 // Hero Routes
 // heroRouter.get('/', getHeroController)
+//! Get the Hero By Id
 exports.heroRouter.get("/:id", heroController_1.getHeroControllerById);
+//! Post The Hero Content
 exports.heroRouter.post('/', isAuth_1.isAuth, upload_1.upload.single('hero-pic'), heroController_1.createHeroController);
+//! Delete the Hero  Content
 exports.heroRouter.delete('/:id', isAuth_1.isAuth, heroController_1.deleteHeroController);
-exports.heroRouter.put('/:id', isAuth_1.isAuth, heroController_1.updateHeroController);
-exports.heroRouter.delete('/uploads/:filename', ImageController_1.deleteImageController);
+//! Hero Image Deletion
+exports.heroRouter.delete('/uploads/:filename', isAuth_1.isAuth, ImageController_1.deleteImageController);
+//! Hero Edition
+exports.heroRouter.put("/:id", isAuth_1.isAuth, upload_1.upload.single("hero-pic"), heroController_1.updateHeroController);

@@ -33,10 +33,19 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Hero = void 0;
+exports.updateHeroSchema = exports.createHeroSchema = void 0;
 const z = __importStar(require("zod"));
-exports.Hero = z.object({
+exports.createHeroSchema = z.object({
+    title: z.string("title is required"),
     heroDescription: z
         .string('text is required')
-        .min(24, 'minmum 24 character is required'),
+        .min(24, 'minmum 24 character is required').optional(),
+    "hero-pic": z.string().optional()
+});
+exports.updateHeroSchema = z.object({
+    title: z.string().optional(),
+    heroDescription: z
+        .string('text is required')
+        .min(24, 'minmum 24 character is required').optional(),
+    "hero-pic": z.string().optional()
 });

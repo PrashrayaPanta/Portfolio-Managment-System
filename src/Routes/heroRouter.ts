@@ -8,7 +8,7 @@ import {
 } from '../Controllers/heroController'
 import { upload } from '../middleware/upload'
 import { isAuth } from '../middleware/isAuth'
-import { deleteImageController } from '../Controllers/ImageController'
+import { deleteImageController, updateImageController } from '../Controllers/ImageController'
 
 
 
@@ -16,9 +16,23 @@ export const heroRouter = express.Router()
 
 // Hero Routes
 // heroRouter.get('/', getHeroController)
-heroRouter.get("/:id", getHeroControllerById)
-heroRouter.post('/', isAuth, upload.single('hero-pic'), createHeroController)
-heroRouter.delete('/:id', isAuth, deleteHeroController)
-heroRouter.put('/:id', isAuth, updateHeroController)
 
-heroRouter.delete('/uploads/:filename', deleteImageController)
+//! Get the Hero By Id
+heroRouter.get("/:id", getHeroControllerById)
+
+
+
+//! Post The Hero Content
+heroRouter.post('/', isAuth, upload.single('hero-pic'), createHeroController)
+
+
+//! Delete the Hero  Content
+heroRouter.delete('/:id', isAuth, deleteHeroController)
+
+//! Hero Image Deletion
+heroRouter.delete('/uploads/:filename', isAuth, deleteImageController)
+
+
+
+//! Hero Edition
+heroRouter.put("/:id", isAuth, upload.single("hero-pic"), updateHeroController)
