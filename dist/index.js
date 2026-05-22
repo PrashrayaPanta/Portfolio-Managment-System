@@ -40,8 +40,12 @@ pool.getConnection((err, connection) => {
 // console.log(connection);
 // Create the connection to database
 const app = (0, express_1.default)();
+const PORT = process.env.Node_PORT || 3000;
 // Adds headers: Access-Control-Allow-Origin: *
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: 'http://localhost:5173', // exact frontend URL – no wildcard
+    credentials: true,
+}));
 // app.post("/profile", upload.single("profile-pic"), (req:Request, res:Response) => {
 // 		console.log(req.file);
 // })
@@ -56,7 +60,7 @@ app.use("/category", categoryRouter_1.categoryRouter);
 //! Hero Route
 app.use('/hero', heroRouter_1.heroRouter);
 //! Project Route
-app.use("/project", projectRouter_1.projectRouter);
+app.use("/projects", projectRouter_1.projectRouter);
 //! Skills
 app.use('/skills', skillsRouter_1.skillRouter);
 //! Contact
@@ -71,6 +75,6 @@ app.get(`{/*aa}`, (req, res) => {
     console.log(req.method);
     res.send(`<h1>404 this is not found No Found hb</h1>`);
 });
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is running on hbm http://localhost:3000 hjbhj');
+app.listen(PORT, () => {
+    console.log(`Server is running at port no ${PORT}`);
 });

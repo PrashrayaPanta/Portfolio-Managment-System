@@ -52,9 +52,15 @@ export { pool }
 const app = express()
 
 
+const PORT = process.env.Node_PORT || 3000
+
+
 
 // Adds headers: Access-Control-Allow-Origin: *
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:5173',  // exact frontend URL – no wildcard
+    credentials: true,
+}));
 
 // app.post("/profile", upload.single("profile-pic"), (req:Request, res:Response) => {
 
@@ -84,7 +90,7 @@ app.use('/hero', heroRouter)
 
 
 //! Project Route
-app.use("/project", projectRouter)
+app.use("/projects", projectRouter)
 
 //! Skills
 app.use('/skills', skillRouter)
@@ -106,6 +112,6 @@ app.get(`{/*aa}`, (req, res) => {
     res.send(`<h1>404 this is not found No Found hb</h1>`)
 })
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is running on hbm http://localhost:3000 hjbhj')
+app.listen(PORT, () => {
+    console.log(`Server is running at port no ${PORT}`)
 })
